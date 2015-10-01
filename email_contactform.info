@@ -1,0 +1,6 @@
+type = module
+name = Email Contact Form
+description = Provides a contact form formatter for email field type.
+backdrop = 1.x
+package = Fields
+
