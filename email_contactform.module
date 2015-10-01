@@ -79,7 +79,7 @@ function email_contactform_field_formatter_view($object_type, $object, $field, $
             $element[$delta]['#markup'] = t("You cannot send more than %number messages per hour. Please try again later.", array('%number' => variable_get('email_hourly_threshold', 3)));
           }
           else {
-            $element[$delta] = backdrop_get_form('email_contactform_mail_page_form', $object_type, $ids[0], $instance['field_name'], $item['email'], $settings);
+            $element[$delta] = backdrop_get_form('email_contactform_form', $object_type, $ids[0], $instance['field_name'], $item['email'], $settings);
           }
         }
         // Since email is always sent to first item's email, break after any email address found.
@@ -286,13 +286,13 @@ function email_contactform_mail_page($object_type, $object_id, $field_name) {
     return t("You cannot send more than %number messages per hour. Please try again later.", array('%number' => config_get('email_contactform.settings', 'hourly_threshold')));
   }
 
-  return backdrop_get_form('email_contactform_mail_page_form', $object_type, $object_id, $field_name, $email);
+  return backdrop_get_form('email_contactform_form', $object_type, $object_id, $field_name, $email);
 }
 
 /**
  * Contact form
  */
-function email_contactform_mail_page_form($form, $form_state, $object_type, $object_id, $field_name, $email, $widget_settings = array()) {
+function email_contactform_form($form, $form_state, $object_type, $object_id, $field_name, $email, $widget_settings = array()) {
   global $user;
 
   $form['object_id'] = array(
@@ -339,8 +339,8 @@ function email_contactform_mail_page_form($form, $form_state, $object_type, $obj
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Send e-mail'),
-    '#validate' => array('email_contactform_mail_page_form_validate'),
-    '#submit' => array('email_contactform_mail_page_form_submit'),
+    '#validate' => array('email_contactform_form_validate'),
+    '#submit' => array('email_contactform_form_submit'),
   );
 
   if (!isset($form_state['widget_settings'])) {
@@ -353,7 +353,7 @@ function email_contactform_mail_page_form($form, $form_state, $object_type, $obj
 /**
  * Validate the site-wide contact page form submission.
  */
-function email_contactform_mail_page_form_validate($form, &$form_state) {
+function email_contactform_form_validate($form, &$form_state) {
   if (!valid_email_address($form_state['values']['mail'])) {
     form_set_error('mail', t('You must enter a valid e-mail address.'));
   }
@@ -366,7 +366,7 @@ function email_contactform_mail_page_form_validate($form, &$form_state) {
 /**
  * Process the site-wide contact page form submission.
  */
-function email_contactform_mail_page_form_submit($form, &$form_state) {
+function email_contactform_form_submit($form, &$form_state) {
   $object_type = $form_state['values']['object_type'];
   $object_id = $form_state['values']['object_id'];
   $field_name = $form_state['values']['field_name'];
