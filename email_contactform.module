@@ -336,6 +336,7 @@ function email_contactform_form($form, $form_state, $object_type, $object_id, $f
     '#title' => t('Message'),
     '#required' => TRUE,
   );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Send e-mail'),
@@ -348,6 +349,36 @@ function email_contactform_form($form, $form_state, $object_type, $object_id, $f
   }
 
   return $form;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function email_contactform_form_email_contactform_form_alter(&$form, &$form_state) {
+  if (module_exists('honeypot')) {
+    $form_settings = config_get('honeypot.settings', 'form_settings');
+    if (in_array('honeypot_form_email_contactforms', $form_settings) && $form_settings['honeypot_form_email_contactforms']) {
+      honeypot_add_form_protection($form, $form_state, array('honeypot', 'time_restriction'));
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function email_contactform_form_honeypot_admin_form_alter(&$form, &$form_state) {
+  $default = FALSE;
+  $form_settings = config_get('honeypot.settings', 'form_settings');
+  if (in_array('honeypot_form_email_contactforms', $form_settings)) {
+    $default = $form_settings['honeypot_form_email_contactforms'];
+  }
+
+  $form['enabled_forms']['email_contactforms'] = array('#markup' => '<h5>' . t('Email field contact forms') . '</h5>');
+  $form['enabled_forms']['honeypot_form_email_contactforms'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'All email field contact forms',
+    '#default_value' => $default,
+  );
 }
 
 /**
