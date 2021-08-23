@@ -5,6 +5,17 @@
  */
 
 /**
+ * Implements hook_config_info().
+ */
+function email_contactform_config_info() {
+  $prefixes['email_contactform.settings'] = array(
+    'label' => t('Email Contact Form'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_menu().
  */
 function email_contactform_menu() {
